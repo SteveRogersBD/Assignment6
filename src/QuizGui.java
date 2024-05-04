@@ -1,4 +1,3 @@
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -9,6 +8,9 @@ import java.util.Random;
 
 /**
  * This class represents the GUI for a quiz game.
+ * It allows users to answer multiple-choice questions and provides navigation and scoring functionalities.
+ * It also dynamically generates questions from an external file.
+ *
  * @author Aniruddha Biswas Atanu
  */
 public class QuizGui implements ActionListener {
@@ -38,7 +40,6 @@ public class QuizGui implements ActionListener {
 
         // Create the main frame
         JFrame frame = new JFrame("Game Quiz");
-        //frame.setLayout(new GridLayout(3, 1));
         frame.setLayout(new BorderLayout());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(new Dimension(600, 450));
@@ -48,8 +49,8 @@ public class QuizGui implements ActionListener {
         // North panel with JLabel
         north = new JLabel("What is your name?");
         JPanel northP = new JPanel(new BorderLayout());
-        northP.setPreferredSize(new Dimension(350,100));
-        northP.add(north,BorderLayout.CENTER);
+        northP.setPreferredSize(new Dimension(350, 100));
+        northP.add(north, BorderLayout.CENTER);
         north.setHorizontalAlignment(JLabel.CENTER);
         frame.add(northP, BorderLayout.NORTH);
         //  Center panel with radio buttons
@@ -99,8 +100,8 @@ public class QuizGui implements ActionListener {
         panUp.add(rb2);
         panDown.add(rb3);
         panDown.add(rb4);
-        panel.add(panUp,BorderLayout.NORTH);
-        panel.add(panDown,BorderLayout.SOUTH);
+        panel.add(panUp, BorderLayout.NORTH);
+        panel.add(panDown, BorderLayout.SOUTH);
     }
 
     /**
@@ -155,7 +156,8 @@ public class QuizGui implements ActionListener {
             for (int i = 0; i < 5; i++) {
                 if (correctAnswer[i] == userAnswer[i]) total += 10;
             }
-            JOptionPane.showMessageDialog(null, "Congratulations: Your Score is: " + total + "/50.");
+            JOptionPane.showMessageDialog(null,
+                    "Congratulations: Your Score is: " + total + "/50.");
             try {
                 generateQuestion();
                 total = 0;
