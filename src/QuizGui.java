@@ -1,9 +1,9 @@
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -41,25 +41,26 @@ public class QuizGui implements ActionListener {
         //frame.setLayout(new GridLayout(3, 1));
         frame.setLayout(new BorderLayout());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(new Dimension(500, 450));
+        frame.setSize(new Dimension(600, 450));
         frame.setVisible(true);
         frame.setBackground(Color.WHITE);
 
         // North panel with JLabel
         north = new JLabel("What is your name?");
-        JPanel northP = new JPanel(new FlowLayout(FlowLayout.CENTER)); // Aligns to center
-        northP.add(north);
+        JPanel northP = new JPanel(new BorderLayout());
+        northP.setPreferredSize(new Dimension(350,100));
+        northP.add(north,BorderLayout.CENTER);
+        north.setHorizontalAlignment(JLabel.CENTER);
         frame.add(northP, BorderLayout.NORTH);
-
         //  Center panel with radio buttons
-        JPanel center = new JPanel(new FlowLayout(FlowLayout.CENTER)); // Aligns radio buttons to center
-        center.setPreferredSize(new Dimension(350, 150));
-        center.setLayout(new GridLayout(2, 2));
+        JPanel center = new JPanel(); // Aligns radio buttons to center
+        center.setPreferredSize(new Dimension(400, 100));
+        center.setLayout(new BorderLayout());
         addRadioButtons(center);
         frame.add(center, BorderLayout.CENTER);
 
         // South panel with buttons
-        JPanel south = new JPanel(new FlowLayout());
+        JPanel south = new JPanel(new BorderLayout());
         addButtons(south);
         frame.add(south, BorderLayout.SOUTH);
 
@@ -87,15 +88,19 @@ public class QuizGui implements ActionListener {
         rButtons.add(rb2);
         rButtons.add(rb3);
         rButtons.add(rb4);
-        Dimension radioButtonSize = new Dimension(100, 50); // Adjust dimensions as needed
+        Dimension radioButtonSize = new Dimension(200, 50); // Adjust dimensions as needed
         rb1.setPreferredSize(radioButtonSize);
         rb2.setPreferredSize(radioButtonSize);
         rb3.setPreferredSize(radioButtonSize);
         rb4.setPreferredSize(radioButtonSize);
-        panel.add(rb1);
-        panel.add(rb2);
-        panel.add(rb3);
-        panel.add(rb4);
+        JPanel panUp = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel panDown = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        panUp.add(rb1);
+        panUp.add(rb2);
+        panDown.add(rb3);
+        panDown.add(rb4);
+        panel.add(panUp,BorderLayout.NORTH);
+        panel.add(panDown,BorderLayout.SOUTH);
     }
 
     /**
@@ -104,6 +109,8 @@ public class QuizGui implements ActionListener {
      * @param panel the panel to which buttons are added.
      */
     private void addButtons(JPanel panel) {
+        panel.setLayout(new FlowLayout(FlowLayout.CENTER));
+
         b1 = new JButton("Restart");
         b1.setBackground(Color.WHITE);
         b1.addActionListener(e -> {
@@ -202,6 +209,8 @@ public class QuizGui implements ActionListener {
         else b2.setEnabled(true);
         if (qIndex == 4) b3.setEnabled(false);
         else b3.setEnabled(true);
+
+        // Display the question
         QuizQuestion a = qList.get(index);
         String[] options = a.getAnswers();
         north.setText("Question " + (qIndex + 1) + " of 5: " + a.getQuestionText());
@@ -211,8 +220,28 @@ public class QuizGui implements ActionListener {
         rb4.setText(options[3]);
         ca = a.getCorrectAnswer();
         correctAnswer[qIndex] = ca;
-        reset();
+
+        // Set user's answer if previously answered
+        int previousAnswer = userAnswer[qIndex];
+        switch (previousAnswer) {
+            case 0:
+                rb1.setSelected(true);
+                break;
+            case 1:
+                rb2.setSelected(true);
+                break;
+            case 2:
+                rb3.setSelected(true);
+                break;
+            case 3:
+                rb4.setSelected(true);
+                break;
+            default:
+                reset();
+                break;
+        }
     }
+
 
     /**
      * Generates a random number.
