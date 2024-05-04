@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -19,6 +20,9 @@ public class QuizGui implements ActionListener {
     public static int total = 0;
     public static int qIndex = 0;
     public static ArrayList<QuizQuestion> qList = new ArrayList<>();
+    public static int[] userAnswer = new int[5];
+    public static int[] correctAnswer = new int[5];
+
 
     /**
      * Constructor for QuizGui class. Sets up the GUI components.
@@ -28,32 +32,36 @@ public class QuizGui implements ActionListener {
     QuizGui() throws FileNotFoundException {
         // Generate questions
         generateQuestion();
+        //filling the userAnswer with -1;
+        for (int i = 0; i < 5; i++) userAnswer[i] = -1;
+
 
         // Create the main frame
-        // Create the main frame
         JFrame frame = new JFrame("Game Quiz");
-        frame.setLayout(new GridLayout(3, 1));
+        //frame.setLayout(new GridLayout(3, 1));
+        frame.setLayout(new BorderLayout());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(new Dimension(500, 450));
         frame.setVisible(true);
         frame.setBackground(Color.WHITE);
 
-    // North panel with JLabel
+        // North panel with JLabel
         north = new JLabel("What is your name?");
         JPanel northP = new JPanel(new FlowLayout(FlowLayout.CENTER)); // Aligns to center
         northP.add(north);
-        frame.add(northP);
-    //  Center panel with radio buttons
+        frame.add(northP, BorderLayout.NORTH);
+
+        //  Center panel with radio buttons
         JPanel center = new JPanel(new FlowLayout(FlowLayout.CENTER)); // Aligns radio buttons to center
         center.setPreferredSize(new Dimension(350, 150));
         center.setLayout(new GridLayout(2, 2));
         addRadioButtons(center);
-        frame.add(center);
+        frame.add(center, BorderLayout.CENTER);
 
-// South panel with buttons
+        // South panel with buttons
         JPanel south = new JPanel(new FlowLayout());
         addButtons(south);
-        frame.add(south);
+        frame.add(south, BorderLayout.SOUTH);
 
 
         // Reset radio buttons
@@ -112,6 +120,7 @@ public class QuizGui implements ActionListener {
         b2 = new JButton("Back");
         b2.addActionListener(e -> {
             if (qIndex > 0) qIndex--;
+
             try {
                 displayQuestion(qIndex);
             } catch (FileNotFoundException ex) {
@@ -135,6 +144,10 @@ public class QuizGui implements ActionListener {
 
         b4 = new JButton("Submit");
         b4.addActionListener(e -> {
+            total = 0;
+            for (int i = 0; i < 5; i++) {
+                if (correctAnswer[i] == userAnswer[i]) total += 10;
+            }
             JOptionPane.showMessageDialog(null, "Congratulations: Your Score is: " + total + "/50.");
             try {
                 generateQuestion();
@@ -185,14 +198,19 @@ public class QuizGui implements ActionListener {
      * @throws FileNotFoundException if the file containing quiz questions is not found.
      */
     public void displayQuestion(int index) throws FileNotFoundException {
+        if (qIndex == 0) b2.setEnabled(false);
+        else b2.setEnabled(true);
+        if (qIndex == 4) b3.setEnabled(false);
+        else b3.setEnabled(true);
         QuizQuestion a = qList.get(index);
         String[] options = a.getAnswers();
-        north.setText("Question "+(qIndex+1)+" of 5: "+a.getQuestionText());
+        north.setText("Question " + (qIndex + 1) + " of 5: " + a.getQuestionText());
         rb1.setText(options[0]);
         rb2.setText(options[1]);
         rb3.setText(options[2]);
         rb4.setText(options[3]);
         ca = a.getCorrectAnswer();
+        correctAnswer[qIndex] = ca;
         reset();
     }
 
@@ -223,26 +241,13 @@ public class QuizGui implements ActionListener {
         if (source instanceof JRadioButton) {
             JRadioButton radioButton = (JRadioButton) source;
             if (radioButton == rb1) {
-                if (ca == 0) {
-                    total += 10;
-                    rb1.setSelected(false);
-                }
-                reset();
+                userAnswer[qIndex] = 0;
             } else if (radioButton == rb2) {
-                if (ca == 1) {
-                    total += 10;
-                    rb2.setSelected(false);
-                }
+                userAnswer[qIndex] = 1;
             } else if (radioButton == rb3) {
-                if (ca == 2) {
-                    total += 10;
-                    rb3.setSelected(false);
-                }
-            } else {
-                if (ca == 3) {
-                    total += 10;
-                    rb4.setSelected(false);
-                }
+                userAnswer[qIndex] = 2;
+            } else if (radioButton == rb4) {
+                userAnswer[qIndex] = 3;
             }
         }
     }

@@ -1,3 +1,4 @@
+
 /**
  * This class represents a single quiz question.
  * @author Aniruddha Biswas Atanu
@@ -56,5 +57,14 @@ public class QuizQuestion {
      */
     public int getCorrectAnswer() {
         return correctAnswer;
+    }
+
+    @Override
+    public String toString() {
+        return questionText+"\n"+answers[0]+"\n"
+                +answers[1]+"\n"
+                +answers[2]+"\n"
+                +answers[3]+"\n"
+                +getCorrectAnswer();
     }
 }
